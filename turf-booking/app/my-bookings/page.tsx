@@ -4,6 +4,7 @@ import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
 import LogoutButton from "@/components/LogoutButton";
 import { useRouter } from "next/navigation";
+import WeekCalendar from "@/components/WeekCalendar";
 
 export default function MyBookings() {
   const router = useRouter();
@@ -61,7 +62,15 @@ export default function MyBookings() {
             Cancel
           </button>
         </div>
+        
       ))}
+      <div>
+        <p className="mt-6 font-bold">Make a new booking:</p>
+      </div>
+      <div>
+        <h2 className="font-bold mt-6 mb-2">Schedule</h2>
+        <WeekCalendar />
+      </div>
     </div>
   );
 }
