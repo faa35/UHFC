@@ -8,7 +8,11 @@ import { supabase } from "@/lib/supabaseClient";
 
 const HOURS = Array.from({ length: 18 }, (_, i) => i + 6); // 6am–12am
 
-export default function WeekCalendar() {
+export default function WeekCalendar({
+  onBooked,
+}: {
+  onBooked?: () => void;
+}) {
   const [weekStart, setWeekStart] = useState(() => getWeekStart(new Date()));
   const [bookings, setBookings] = useState<any[]>([]);
   const [selectedSlot, setSelectedSlot] = useState<any>(null);
@@ -32,7 +36,9 @@ export default function WeekCalendar() {
         "postgres_changes",
         { event: "*", schema: "public", table: "bookings" },
         () => {
-          fetchBookingsForWeek(weekStart).then(setBookings).catch(console.error);
+          fetchBookingsForWeek(weekStart)
+            .then(setBookings)
+            .catch(console.error);
         }
       )
       .subscribe();
@@ -69,18 +75,6 @@ export default function WeekCalendar() {
         <button onClick={() => setWeekStart(addDays(weekStart, 7))}>
           Next ▶
         </button>
-      </div>
-
-      {/* Optional legend */}
-      <div className="flex gap-4 text-sm mb-3">
-        <div className="flex items-center gap-2">
-          <span className="w-4 h-4 bg-red-300 inline-block border" />
-          Pending
-        </div>
-        <div className="flex items-center gap-2">
-          <span className="w-4 h-4 bg-blue-300 inline-block border" />
-          Confirmed
-        </div>
       </div>
 
       <div className="grid grid-cols-8 border">
@@ -130,7 +124,14 @@ export default function WeekCalendar() {
           onClose={() => setSelectedSlot(null)}
           onBooked={() => {
             setSelectedSlot(null);
-            fetchBookingsForWeek(weekStart).then(setBookings).catch(console.error);
+
+            // local refresh (nice UX)
+            fetchBookingsForWeek(weekStart)
+              .then(setBookings)
+              .catch(console.error);
+
+            // 🔥 HARD REFRESH for MyBookings sync
+            onBooked?.();
           }}
         />
       )}

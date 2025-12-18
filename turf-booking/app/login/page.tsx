@@ -38,7 +38,7 @@ export default function LoginPage() {
     if (profile?.role === "admin") {
         router.push("/admin/bookings"); // show pending list immediately
     } else {
-        router.push("/schedule");
+        router.push("/my-bookings"); // show user's bookings and schedule
     }
     }
 
