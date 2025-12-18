@@ -10,11 +10,12 @@ export default function SignupPage() {
   const [password, setPassword] = useState("");
   const [fullName, setFullName] = useState("");
   const [phone, setPhone] = useState("");
+  const [phoneFocused, setPhoneFocused] = useState(false);
 
   async function onSignup(e: React.FormEvent) {
     e.preventDefault();
 
-    // ✅ ENFORCE PHONE NUMBER (ONLY ADDITION)
+    // ✅ ENFORCE PHONE NUMBER
     if (!phone.trim()) {
       alert("Phone number is required.");
       return;
@@ -35,7 +36,6 @@ export default function SignupPage() {
       return;
     }
 
-    // keep your existing profile logic (UNCHANGED)
     const userId = data.user?.id;
     if (userId) {
       const { error: profileErr } = await supabase.from("profiles").upsert({
@@ -66,13 +66,23 @@ export default function SignupPage() {
           onChange={(e) => setFullName(e.target.value)}
         />
 
+        {/* Phone input */}
         <input
           className="border w-full p-2"
           placeholder="Phone (required)"
           value={phone}
           onChange={(e) => setPhone(e.target.value)}
+          onFocus={() => setPhoneFocused(true)}
+          onBlur={() => setPhoneFocused(false)}
           required
         />
+
+        {/* 👇 Helper text (only when focused or typing) */}
+        {(phoneFocused || phone.length > 0) && (
+          <p className="text-sm text-gray-600">
+            We will call you on this number to confirm your booking. (on Whatsapp)
+          </p>
+        )}
 
         <input
           className="border w-full p-2"

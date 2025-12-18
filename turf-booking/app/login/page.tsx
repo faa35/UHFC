@@ -45,6 +45,7 @@ export default function LoginPage() {
 
   return (
     <main className="p-6 max-w-md">
+      <p className="mb-4 "> To book a slot or view your bookings, please log in.</p>
       <h1 className="text-xl font-bold mb-4">Login</h1>
 
       <form onSubmit={onLogin} className="space-y-3">
