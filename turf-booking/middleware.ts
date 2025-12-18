@@ -6,8 +6,8 @@ export async function middleware(req: NextRequest) {
   let res = NextResponse.next();
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.SUPABASE_URL!,
+    process.env.SUPABASE_ANON_KEY!,
     {
       cookies: {
         getAll: () => req.cookies.getAll(),
@@ -20,20 +20,17 @@ export async function middleware(req: NextRequest) {
     }
   );
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
 
-  // Only protect /admin/*
   if (req.nextUrl.pathname.startsWith("/admin")) {
-    // Not logged in -> redirect to /login (WITH cookies preserved)
     if (!user) {
       const url = req.nextUrl.clone();
       url.pathname = "/login";
 
       const redirectRes = NextResponse.redirect(url);
-      // copy cookies Supabase may have set onto the redirect response
-      res.cookies.getAll().forEach((c) => redirectRes.cookies.set(c));
+      res.cookies.getAll().forEach(({ name, value, ...rest }) => {
+        redirectRes.cookies.set(name, value, rest);
+      });
       return redirectRes;
     }
 
@@ -52,7 +49,9 @@ export async function middleware(req: NextRequest) {
       url.pathname = "/schedule";
 
       const redirectRes = NextResponse.redirect(url);
-      res.cookies.getAll().forEach((c) => redirectRes.cookies.set(c));
+      res.cookies.getAll().forEach(({ name, value, ...rest }) => {
+        redirectRes.cookies.set(name, value, rest);
+      });
       return redirectRes;
     }
   }
