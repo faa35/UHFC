@@ -3,6 +3,7 @@
 import { supabase } from "@/lib/supabaseClient";
 import { useEffect, useState } from "react";
 import LogoutButton from "@/components/LogoutButton";
+import { useRouter } from "next/navigation";
 
 type Profile = {
   full_name: string | null;
@@ -15,7 +16,7 @@ type Booking = {
   end_time: string;
   status: "PENDING_CALL" | "CONFIRMED" | "CANCELLED" | string;
   user_id: string;
-  profiles: Profile | null; // <-- IMPORTANT: object (or null), NOT array
+  profiles: Profile | null; // object (or null)
 };
 
 function displayName(p: Profile | null): string {
@@ -29,6 +30,8 @@ function displayPhone(p: Profile | null): string {
 }
 
 export default function AdminBookings() {
+  const router = useRouter();
+
   const [pending, setPending] = useState<Booking[]>([]);
   const [confirmed, setConfirmed] = useState<Booking[]>([]);
   const [loading, setLoading] = useState(false);
@@ -59,18 +62,47 @@ export default function AdminBookings() {
       return;
     }
 
-    // Optional debug
-    // console.log("First row:", data?.[0]);
-
     const all = (data ?? []) as unknown as Booking[];
     setPending(all.filter((b) => b.status === "PENDING_CALL"));
     setConfirmed(all.filter((b) => b.status === "CONFIRMED"));
   }
 
+  // ✅ FIX #2: Client-side auth guard (handles back button / bfcache)
+  useEffect(() => {
+    let cancelled = false;
+
+    async function checkSession() {
+      const { data, error } = await supabase.auth.getSession();
+      if (!cancelled) {
+        if (error) console.warn("getSession error:", error);
+        if (!data.session) {
+          router.replace("/login");
+          router.refresh();
+        }
+      }
+    }
+
+    checkSession();
+
+    // If logout happens (even in another tab), kick out immediately
+    const { data: listener } = supabase.auth.onAuthStateChange(
+      (_event, session) => {
+        if (!session) {
+          router.replace("/login");
+          router.refresh();
+        }
+      }
+    );
+
+    return () => {
+      cancelled = true;
+      listener.subscription.unsubscribe();
+    };
+  }, [router]);
+
   useEffect(() => {
     load();
 
-    // realtime so when schedule updates, admin list updates too
     const channel = supabase
       .channel("admin-bookings-changes")
       .on(
@@ -121,7 +153,7 @@ export default function AdminBookings() {
           <p className="text-sm">No pending bookings 🎉</p>
         ) : (
           pending.map((b) => {
-            const p = b.profiles; // <-- fixed
+            const p = b.profiles;
             return (
               <div
                 key={b.id}
@@ -170,7 +202,7 @@ export default function AdminBookings() {
           <p className="text-sm">No confirmed bookings yet.</p>
         ) : (
           confirmed.map((b) => {
-            const p = b.profiles; // <-- fixed
+            const p = b.profiles;
             return (
               <div
                 key={b.id}
