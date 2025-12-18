@@ -1,4 +1,6 @@
 import Link from "next/link";
+import WeekCalendar from "@/components/WeekCalendar";
+
 
 export default function HomePage() {
   return (
@@ -12,7 +14,15 @@ export default function HomePage() {
         <Link className="border px-3 py-2" href="/signup">Sign Up</Link>
         <Link className="border px-3 py-2" href="/my-bookings">My Bookings</Link>
         <Link className="border px-3 py-2" href="/admin/bookings">Admin</Link>
+        
       </div>
+
+      <div>
+        <WeekCalendar />
+      </div>
+
+
     </main>
   );
 }
+
