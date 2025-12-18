@@ -10,7 +10,7 @@ export default function LogoutButton() {
     await supabase.auth.signOut();
 
     // replace history so back button won't return to protected pages
-    router.replace("/login");
+    router.replace("/"); // redirect to home page
 
     // ensure cached pages re-check auth
     router.refresh();

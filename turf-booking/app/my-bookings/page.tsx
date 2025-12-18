@@ -108,7 +108,7 @@ async function cancel(id: string) {
       ))}
 
       <div className="mt-6">
-        <p className="font-bold">Make a new booking:</p>
+        <p className="font-bold">Make a new booking below:</p>
       </div>
 
       <div>
