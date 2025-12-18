@@ -10,18 +10,38 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  async function onLogin(e: React.FormEvent) {
+    async function onLogin(e: React.FormEvent) {
     e.preventDefault();
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
-
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return alert(error.message);
 
-    router.push("/schedule");
-  }
+    const { data: authData } = await supabase.auth.getUser();
+    const user = authData.user;
+
+    if (!user) {
+        router.push("/schedule");
+        return;
+    }
+
+    const { data: profile, error: profileErr } = await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", user.id)
+        .single();
+
+    if (profileErr) {
+        router.push("/schedule");
+        return;
+    }
+
+    if (profile?.role === "admin") {
+        router.push("/admin/bookings"); // show pending list immediately
+    } else {
+        router.push("/schedule");
+    }
+    }
+
 
   return (
     <main className="p-6 max-w-md">

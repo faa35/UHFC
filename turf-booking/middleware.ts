@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { createServerClient } from "@supabase/ssr";
 
 export async function middleware(req: NextRequest) {
+  // This is the response Supabase will attach cookies to
   let res = NextResponse.next();
 
   const supabase = createServerClient(
@@ -23,24 +24,36 @@ export async function middleware(req: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // If trying to access /admin, must be logged in AND admin
+  // Only protect /admin/*
   if (req.nextUrl.pathname.startsWith("/admin")) {
+    // Not logged in -> redirect to /login (WITH cookies preserved)
     if (!user) {
       const url = req.nextUrl.clone();
       url.pathname = "/login";
-      return NextResponse.redirect(url);
+
+      const redirectRes = NextResponse.redirect(url);
+      // copy cookies Supabase may have set onto the redirect response
+      res.cookies.getAll().forEach((c) => redirectRes.cookies.set(c));
+      return redirectRes;
     }
 
-    const { data: profile } = await supabase
+    // Check role
+    const { data: profile, error } = await supabase
       .from("profiles")
       .select("role")
       .eq("id", user.id)
       .single();
 
-    if (profile?.role !== "admin") {
+    const role = (profile?.role || "").toLowerCase().trim();
+
+    // If profile missing / RLS error / not admin -> redirect to schedule (WITH cookies)
+    if (error || role !== "admin") {
       const url = req.nextUrl.clone();
       url.pathname = "/schedule";
-      return NextResponse.redirect(url);
+
+      const redirectRes = NextResponse.redirect(url);
+      res.cookies.getAll().forEach((c) => redirectRes.cookies.set(c));
+      return redirectRes;
     }
   }
 
