@@ -99,13 +99,13 @@ export default function WeekCalendar({
 
   return (
     <div>
-      <div className="flex justify-between mb-2 items-center">
+      <div className="flex justify-between mb-2 items-center text-gray-600">
         <button
           onClick={() => canGoPrev && setWeekStart(prevWeek)}
           disabled={!canGoPrev}
           className={!canGoPrev ? "opacity-40 cursor-not-allowed" : ""}
         >
-          ◀ Prev
+          ◀ Previous Week
         </button>
 
         {/* <h2 className="font-bold">Week of {format(weekStart, "MMM d")}</h2> */}
@@ -115,7 +115,7 @@ export default function WeekCalendar({
           disabled={!canGoNext}
           className={!canGoNext ? "opacity-40 cursor-not-allowed" : ""}
         >
-          Next ▶
+          Next Week▶
         </button>
       </div>
 
@@ -126,7 +126,7 @@ export default function WeekCalendar({
       
       </h2>
 
-      <div className="grid grid-cols-8 border">
+      <div className="grid grid-cols-8 border-2 border-black text-gray-600">
         <div />
         {/* {days.map((day, d) => (
           <div key={d} className="text-center font-semibold border">
@@ -137,7 +137,7 @@ export default function WeekCalendar({
         {days.map((day, d) => (
           <div
             key={d}
-            className="text-center font-semibold border flex flex-col leading-tight"
+            className="text-center font-semibold border flex flex-col leading-tight text-gray-600"
           >
             <span>{format(day, "EEE")}</span>
             <span className="text-sm text-gray-600">
@@ -149,7 +149,7 @@ export default function WeekCalendar({
 
         {HOURS.map((hour) => (
           <div key={hour} className="contents">
-            <div className="border text-sm p-1">{hour}:00</div>
+            <div className="border text-sm text-gray-600 p-1">{hour}:00</div>
 
             {days.map((day, d) => {
               const booked = isBooked(day, hour);

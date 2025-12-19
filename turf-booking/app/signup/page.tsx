@@ -3,6 +3,9 @@
 import { useState } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import TopNavItem from "@/components/TopNavItem";
+import FooterSocial from "@/components/FooterSocial";
 
 export default function SignupPage() {
   const router = useRouter();
@@ -55,57 +58,151 @@ export default function SignupPage() {
   }
 
   return (
-    <main className="p-6 max-w-md">
-      <h1 className="text-xl font-bold mb-4">Sign Up</h1>
+    <main className="min-h-screen bg-white">
+      {/* TOP GREEN BAR */}
+      <header className="bg-[#4B7D1A] text-white">
+        <div className="mx-auto max-w-6xl px-4 sm:px-6">
+          <div className="flex items-center justify-between py-3">
+            {/* Left brand */}
+            <Link href="/" className="flex items-center gap-3 min-w-0">
+              <div className="h-10 w-10 rounded bg-white/15 flex items-center justify-center font-bold shrink-0">
+                UH
+              </div>
+              <div className="min-w-0">
+                <div className="font-bold leading-5 truncate">UHFC</div>
+                <div className="text-sm text-white/90 leading-4 truncate">
+                  Sports Complex
+                </div>
+              </div>
+            </Link>
 
-      <form onSubmit={onSignup} className="space-y-3">
-        <input
-          className="border w-full p-2"
-          placeholder="Full name"
-          value={fullName}
-          onChange={(e) => setFullName(e.target.value)}
-        />
+            {/* Right icon blocks */}
+            <div className="flex items-stretch gap-[1px] overflow-hidden rounded">
+              <TopNavItem href="/login" icon="🔑" label="Login" />
+              <TopNavItem
+                href="/signup"
+                icon="📝"
+                label="Sign Up"
+                variant="yellow"
+              />
+              <TopNavItem
+                href="/my-bookings"
+                icon="👤"
+                label="My Bookings"
+                widthClass="w-[90px]"
+              />
+            </div>
+          </div>
+        </div>
+      </header>
 
-        {/* Phone input */}
-        <input
-          className="border w-full p-2"
-          placeholder="Phone (required)"
-          value={phone}
-          onChange={(e) => setPhone(e.target.value)}
-          onFocus={() => setPhoneFocused(true)}
-          onBlur={() => setPhoneFocused(false)}
-          required
-        />
+      {/* HERO IMAGE + OVERLAY SIGNUP CARD */}
+      <section className="relative w-full">
+        {/* Image */}
+        <div className="relative h-[260px] sm:h-[420px] w-full overflow-hidden">
+          <img
+            src="/Gemini_Generated_Image_xqwa7bxqwa7bxqwa.png"
+            alt="Sports field"
+            className="h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-black/15" />
+        </div>
 
-        {/* 👇 Helper text (only when focused or typing) */}
-        {(phoneFocused || phone.length > 0) && (
-          <p className="text-sm text-gray-600">
-            We will call you on this number to confirm your booking. (on Whatsapp)
-          </p>
-        )}
+        {/* CARD OVER PHOTO */}
+        <div className="absolute inset-x-0 top-[140px] sm:top-[235px]">
+          <div className="mx-auto max-w-6xl px-4 sm:px-6">
+            <div className="flex justify-center">
+              <div className="w-full max-w-md rounded-lg border border-black bg-white p-5 sm:p-6 shadow-2xl">
+                <p className="mb-4 text-sm text-gray-700">
+                  Create an account to book a slot and we will call you to confirm.
+                </p>
 
-        <input
-          className="border w-full p-2"
-          placeholder="Email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          type="email"
-          required
-        />
+                <h1 className="text-xl font-bold mb-4 text-black">Sign Up</h1>
 
-        <input
-          className="border w-full p-2"
-          placeholder="Password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          required
-        />
+                <form onSubmit={onSignup} className="space-y-3">
+                  <div>
+                    <label className="block text-sm font-semibold text-black mb-1">
+                      Full name
+                    </label>
+                    <input
+                      className="border border-black w-full p-2 rounded text-black placeholder-gray-400"
+                      placeholder="Full name"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                    />
+                  </div>
 
-        <button className="bg-black text-white px-3 py-2 w-full">
-          Create account
-        </button>
-      </form>
+                  <div>
+                    <label className="block text-sm font-semibold text-black mb-1">
+                      Phone
+                    </label>
+                    <input
+                      className="border border-black w-full p-2 rounded text-black placeholder-gray-400"
+                      placeholder="Phone (required)"
+                      value={phone}
+                      onChange={(e) => setPhone(e.target.value)}
+                      onFocus={() => setPhoneFocused(true)}
+                      onBlur={() => setPhoneFocused(false)}
+                      required
+                    />
+
+                    {(phoneFocused || phone.length > 0) && (
+                      <p className="mt-2 text-sm text-gray-700">
+                        We will call you on this number to confirm your booking.
+                        <span className="text-gray-500"> (on WhatsApp)</span>
+                      </p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-semibold text-black mb-1">
+                      Email
+                    </label>
+                    <input
+                      className="border border-black w-full p-2 rounded text-black placeholder-gray-400"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      type="email"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm text-gray-600 font-semibold text-black mb-1">
+                      Password
+                    </label>
+                    <input
+                      className="border border-black w-full p-2 rounded text-black placeholder-gray-400"
+                      placeholder="Password"
+                      type="password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <button className="bg-black text-white px-3 py-2 w-full rounded font-semibold">
+                    Create account
+                  </button>
+                </form>
+
+                <p className="mt-4 text-sm text-black">
+                  Already have an account?{" "}
+                  <Link className="underline font-semibold" href="/login">
+                    Login
+                  </Link>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Spacer so the absolute card doesn't overlap next content */}
+      <div className="h-[260px] sm:h-[260px]" />
+      <FooterSocial />
     </main>
+    
   );
 }
